@@ -17,8 +17,8 @@ var connected = false;
 var connectedDevice;
 
 // TypedArray for data we want to send (5 bytes)
-var data = new Uint8Array(5);
-var last_data = new Uint8Array(5);
+var data = new Uint8Array(4);
+var last_data = new Uint8Array(4);
 
 // Set status line when device is ready.
 function onDeviceReady() {
@@ -100,8 +100,7 @@ function connectSuccess(device) {
 	data[0] = 0xff;
 	data[1] = 0x00;
 	data[2] = 0x00;
-	data[3] = 0x00;
-	data[4] = 0x00;
+	data[3] = 0x00;	
 	
 	// Start interval: Send data and shift bytes every 0.1 seconds
 	cycleInterval = setInterval(shiftByteAndSend, 100);
@@ -110,11 +109,11 @@ function connectSuccess(device) {
 function shiftByteAndSend() {
 	
 	// Shift ("rotate") byte by one, so FF000000 becomes 00FF000000 and so on.
-	for (var i = 0; i < 5; i++) {
+	for (var i = 0; i < 4; i++) {
 		last_data[i] = data[i];
 	}	
-	for (var i = 0; i < 5; i++) {
-		data[i] = last_data[(i + 1) % 5];
+	for (var i = 0; i < 4; i++) {
+		data[i] = last_data[(i + 1) % 4];
 	}
 	
 	// Send byte array to wearable.
@@ -127,8 +126,8 @@ function writeDone() {
 }
 
 // Callback when write fails.
-function writeFailure() {
-	$("#status").html("Write failed.");
+function writeFailure(error) {
+	$("#error").html("Write failed." + JSON.stringify(error));
 }
 
 
